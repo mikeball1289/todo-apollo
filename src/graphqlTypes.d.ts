@@ -13,14 +13,22 @@ import { GraphQLResolveInfo } from 'graphql';
  *                             *
  *******************************/
 export interface GQLQuery {
-  helloWorld?: string;
-  number?: GQLNumber;
+  todos?: Array<GQLTodoItem | null>;
 }
 
-export interface GQLNumber {
-  value?: number;
-  next?: GQLNumber;
-  prev?: GQLNumber;
+export interface GQLTodoItem {
+  title?: string;
+  status?: GQLTodoStatus;
+}
+
+export const enum GQLTodoStatus {
+  COMPLETE = 'COMPLETE',
+  IN_PROGRESS = 'IN_PROGRESS',
+  TODO = 'TODO'
+}
+
+export interface GQLMutation {
+  addTodo?: GQLTodoItem;
 }
 
 /*********************************
@@ -35,38 +43,37 @@ export interface GQLNumber {
  */
 export interface GQLResolver {
   Query?: GQLQueryTypeResolver;
-  Number?: GQLNumberTypeResolver;
+  TodoItem?: GQLTodoItemTypeResolver;
+  Mutation?: GQLMutationTypeResolver;
 }
 export interface GQLQueryTypeResolver<TParent = any> {
-  helloWorld?: QueryToHelloWorldResolver<TParent>;
-  number?: QueryToNumberResolver<TParent>;
+  todos?: QueryToTodosResolver<TParent>;
 }
 
-export interface QueryToHelloWorldResolver<TParent = any, TResult = any> {
+export interface QueryToTodosResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
-export interface QueryToNumberArgs {
-  n: number;
-}
-export interface QueryToNumberResolver<TParent = any, TResult = any> {
-  (parent: TParent, args: QueryToNumberArgs, context: any, info: GraphQLResolveInfo): TResult;
+export interface GQLTodoItemTypeResolver<TParent = any> {
+  title?: TodoItemToTitleResolver<TParent>;
+  status?: TodoItemToStatusResolver<TParent>;
 }
 
-export interface GQLNumberTypeResolver<TParent = any> {
-  value?: NumberToValueResolver<TParent>;
-  next?: NumberToNextResolver<TParent>;
-  prev?: NumberToPrevResolver<TParent>;
-}
-
-export interface NumberToValueResolver<TParent = any, TResult = any> {
+export interface TodoItemToTitleResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
-export interface NumberToNextResolver<TParent = any, TResult = any> {
+export interface TodoItemToStatusResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
 }
 
-export interface NumberToPrevResolver<TParent = any, TResult = any> {
-  (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+export interface GQLMutationTypeResolver<TParent = any> {
+  addTodo?: MutationToAddTodoResolver<TParent>;
+}
+
+export interface MutationToAddTodoArgs {
+  title: string;
+}
+export interface MutationToAddTodoResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: MutationToAddTodoArgs, context: any, info: GraphQLResolveInfo): TResult;
 }

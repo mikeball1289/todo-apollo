@@ -3,29 +3,47 @@ import 'graphql-import-node';
 import typeDefs from '../gql/schema.gql';
 import {
     GQLResolver,
-    QueryToNumberResolver,
-    GQLNumberTypeResolver,
+    GQLTodoItem,
+    GQLTodoStatus,
+    GQLTodoItemTypeResolver
 } from './graphqlTypes';
 
-interface NumberValue {
-    value: number;
+const todos: GQLTodoItem[] = [{
+    title: 'Build a todo graph',
+    status: GQLTodoStatus.IN_PROGRESS,
+}, {
+    title: 'Interact with that graph',
+    status: GQLTodoStatus.TODO,
+}];
+
+interface TodoHandle {
+    idx: number;
 }
 
-const number: QueryToNumberResolver<undefined, NumberValue> = (parent, { n }) => ({
-    value: n
-});
-
-const Number: GQLNumberTypeResolver<NumberValue> & IResolverObject = {
-    next: parent => ({ value: parent.value + 1 }),
-    prev: parent => ({ value: parent.value - 1 }),
+const TodoItem: GQLTodoItemTypeResolver<TodoHandle> & IResolverObject = {
+    status: parent => todos[parent.idx].status,
+    title: parent => todos[parent.idx].title,
 };
 
 const resolvers: GQLResolver & IResolvers = {
     Query: {
-        helloWorld: () => 'hello world',
-        number
+        todos: () => todos,
+        // todo: (parent, { idx }) => {
+        //     if (idx < 0 || idx >= todos.length) throw new TypeError('Index is out of bounds');
+        //     return { idx };
+        // },
     },
-    Number
+    // TodoItem,
+    Mutation: {
+        addTodo: (parent, { title }) => {
+            const newTodo: GQLTodoItem = {
+                title,
+                status: GQLTodoStatus.TODO,
+            };
+            todos.push(newTodo);
+            return newTodo;
+        }
+    }
 };
 
 const server = new ApolloServer({

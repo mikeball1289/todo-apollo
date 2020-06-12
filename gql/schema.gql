@@ -1,10 +1,19 @@
-type Number {
-    value: Int
-    next: Number
-    prev: Number
+enum TodoStatus {
+    COMPLETE
+    IN_PROGRESS
+    TODO
+}
+
+type TodoItem {
+    title: String
+    status: TodoStatus
 }
 
 type Query {
-    helloWorld: String
-    number(n: Int!): Number
+    todos: [TodoItem]
+    # todo(idx: Int!): TodoItem
+}
+
+type Mutation {
+    addTodo(title: String!): TodoItem
 }
