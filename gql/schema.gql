@@ -1,3 +1,10 @@
+type Number {
+    value: Int
+    next: Number
+    prev: Number
+}
+
 type Query {
     helloWorld: String
+    number(n: Int!): Number
 }

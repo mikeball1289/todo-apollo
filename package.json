@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:types": "graphql-schema-typescript generate-ts gql --output src/graphqlTypes.d.ts",
     "build": "tsc -p ."
   },
   "author": "",
@@ -13,5 +14,9 @@
     "apollo-server": "^2.14.4",
     "graphql-import-node": "0.0.4",
     "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "graphql-schema-typescript": "^1.3.2",
+    "lodash": "^4.17.15"
   }
 }
