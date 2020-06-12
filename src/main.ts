@@ -9,7 +9,24 @@ import {
     GQLTodoOpsTypeResolver,
 } from './graphqlTypes';
 
-const todos: GQLTodoItem[] = [{
+type Undefined<T> = {
+    [K in keyof T]: undefined;
+}
+
+interface TodoItem {
+    title: string;
+    status: GQLTodoStatus;
+}
+
+// Typescript requires the fields in the alternate interface
+// to exist in this one, but be undefined, in order to do type flow analysis properly
+interface TodoItemHandle extends Undefined<TodoItem> {
+    idx: number;
+}
+
+type TodoItemResolverType = TodoItem | TodoItemHandle;
+
+const todos: TodoItem[] = [{
     title: 'Build a todo graph',
     status: GQLTodoStatus.IN_PROGRESS,
 }, {
@@ -17,35 +34,30 @@ const todos: GQLTodoItem[] = [{
     status: GQLTodoStatus.TODO,
 }];
 
-interface TodoHandle {
-    idx: number;
-}
-
-const TodoItem: GQLTodoItemTypeResolver<TodoHandle> & IResolverObject = {
-    status: parent => todos[parent.idx].status,
-    title: parent => todos[parent.idx].title,
+const TodoItem: GQLTodoItemTypeResolver<TodoItemResolverType> & IResolverObject = {
+    status: parent => parent.status ?? todos[parent.idx].status,
+    title: parent => parent.title ?? todos[parent.idx].title,
 };
 
-const TodoOps: GQLTodoOpsTypeResolver<TodoHandle> & IResolverObject = {
-    setStatus: (parent, { status }) => {
-        const todoItem = todos[parent.idx];
-        todoItem.status = status;
-        return todoItem;
+const TodoOps: GQLTodoOpsTypeResolver<TodoItemHandle> & IResolverObject = {
+    setStatus: ({ idx }, { status }) => {
+        todos[idx].status = status;
+        return { idx };
     }
 };
 
 const resolvers: GQLResolver & IResolvers = {
     Query: {
         todos: () => todos,
-        // todo: (parent, { idx }) => {
-        //     if (idx < 0 || idx >= todos.length) throw new TypeError('Index is out of bounds');
-        //     return { idx };
-        // },
+        todo: (parent, { idx }) => {
+            if (idx < 0 || idx >= todos.length) throw new TypeError('Index is out of bounds');
+            return { idx };
+        },
     },
-    // TodoItem,
+    TodoItem,
     Mutation: {
         addTodo: (parent, { title }) => {
-            const newTodo: GQLTodoItem = {
+            const newTodo: TodoItem = {
                 title,
                 status: GQLTodoStatus.TODO,
             };

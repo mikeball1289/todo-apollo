@@ -11,7 +11,7 @@ type TodoItem {
 
 type Query {
     todos: [TodoItem]
-    # todo(idx: Int!): TodoItem
+    todo(idx: Int!): TodoItem
 }
 
 type Mutation {

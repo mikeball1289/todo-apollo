@@ -14,6 +14,7 @@ import { GraphQLResolveInfo } from 'graphql';
  *******************************/
 export interface GQLQuery {
   todos?: Array<GQLTodoItem | null>;
+  todo?: GQLTodoItem;
 }
 
 export interface GQLTodoItem {
@@ -54,10 +55,18 @@ export interface GQLResolver {
 }
 export interface GQLQueryTypeResolver<TParent = any> {
   todos?: QueryToTodosResolver<TParent>;
+  todo?: QueryToTodoResolver<TParent>;
 }
 
 export interface QueryToTodosResolver<TParent = any, TResult = any> {
   (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface QueryToTodoArgs {
+  idx: number;
+}
+export interface QueryToTodoResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: QueryToTodoArgs, context: any, info: GraphQLResolveInfo): TResult;
 }
 
 export interface GQLTodoItemTypeResolver<TParent = any> {
