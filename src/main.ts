@@ -5,7 +5,8 @@ import {
     GQLResolver,
     GQLTodoItem,
     GQLTodoStatus,
-    GQLTodoItemTypeResolver
+    GQLTodoItemTypeResolver,
+    GQLTodoOpsTypeResolver,
 } from './graphqlTypes';
 
 const todos: GQLTodoItem[] = [{
@@ -25,6 +26,14 @@ const TodoItem: GQLTodoItemTypeResolver<TodoHandle> & IResolverObject = {
     title: parent => todos[parent.idx].title,
 };
 
+const TodoOps: GQLTodoOpsTypeResolver<TodoHandle> & IResolverObject = {
+    setStatus: (parent, { status }) => {
+        const todoItem = todos[parent.idx];
+        todoItem.status = status;
+        return todoItem;
+    }
+};
+
 const resolvers: GQLResolver & IResolvers = {
     Query: {
         todos: () => todos,
@@ -42,8 +51,13 @@ const resolvers: GQLResolver & IResolvers = {
             };
             todos.push(newTodo);
             return newTodo;
+        },
+        todo: (parent, { idx }) => {
+            if (idx < 0 || idx >= todos.length) throw new TypeError('Index is out of bounds');
+            return { idx };
         }
-    }
+    },
+    TodoOps,
 };
 
 const server = new ApolloServer({

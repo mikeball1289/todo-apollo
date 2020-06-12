@@ -29,6 +29,11 @@ export const enum GQLTodoStatus {
 
 export interface GQLMutation {
   addTodo?: GQLTodoItem;
+  todo?: GQLTodoOps;
+}
+
+export interface GQLTodoOps {
+  setStatus?: GQLTodoItem;
 }
 
 /*********************************
@@ -45,6 +50,7 @@ export interface GQLResolver {
   Query?: GQLQueryTypeResolver;
   TodoItem?: GQLTodoItemTypeResolver;
   Mutation?: GQLMutationTypeResolver;
+  TodoOps?: GQLTodoOpsTypeResolver;
 }
 export interface GQLQueryTypeResolver<TParent = any> {
   todos?: QueryToTodosResolver<TParent>;
@@ -69,6 +75,7 @@ export interface TodoItemToStatusResolver<TParent = any, TResult = any> {
 
 export interface GQLMutationTypeResolver<TParent = any> {
   addTodo?: MutationToAddTodoResolver<TParent>;
+  todo?: MutationToTodoResolver<TParent>;
 }
 
 export interface MutationToAddTodoArgs {
@@ -76,4 +83,22 @@ export interface MutationToAddTodoArgs {
 }
 export interface MutationToAddTodoResolver<TParent = any, TResult = any> {
   (parent: TParent, args: MutationToAddTodoArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface MutationToTodoArgs {
+  idx: number;
+}
+export interface MutationToTodoResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: MutationToTodoArgs, context: any, info: GraphQLResolveInfo): TResult;
+}
+
+export interface GQLTodoOpsTypeResolver<TParent = any> {
+  setStatus?: TodoOpsToSetStatusResolver<TParent>;
+}
+
+export interface TodoOpsToSetStatusArgs {
+  status: GQLTodoStatus;
+}
+export interface TodoOpsToSetStatusResolver<TParent = any, TResult = any> {
+  (parent: TParent, args: TodoOpsToSetStatusArgs, context: any, info: GraphQLResolveInfo): TResult;
 }

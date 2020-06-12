@@ -16,4 +16,9 @@ type Query {
 
 type Mutation {
     addTodo(title: String!): TodoItem
+    todo(idx: Int!): TodoOps
+}
+
+type TodoOps {
+    setStatus(status: TodoStatus!): TodoItem
 }
